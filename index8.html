@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Valentine's Giveaway</title>
+<style>
+  /* --- General Styling --- */
+  body {
+    margin: 0;
+    padding: 10px;
+    background-color: #e9ebee;
+    font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+  }
+  .viral-container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+   
+  /* --- HEADER IMAGE (UPDATED) --- */
+  .header-img {
+    width: 100%;
+    height: auto; /* Auto height to keep aspect ratio */
+    min-height: 200px;
+    background-color: #a41018; /* Dark red fallback */
+    position: relative;
+    overflow: hidden;
+  }
+   
+  .header-img img {
+      width: 100%;
+      height: auto;
+      display: block;
+  }
+
+  /* Optional Badge */
+  .header-img::after {
+      content: 'LIVE EVENT';
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ffffff;
+      color: #a41018;
+      padding: 4px 8px;
+      font-weight: bold;
+      border-radius: 4px;
+      font-size: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      animation: pulse-red 2s infinite;
+  }
+
+  /* --- Content Body --- */
+  .content-body { padding: 20px; text-align: center; }
+
+  h2 { color: #1c1e21; margin-top: 5px; font-size: 22px; line-height: 1.3; }
+  p { color: #606770; font-size: 16px; margin-bottom: 25px; line-height: 1.5; }
+
+  /* --- Buttons --- */
+  .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 16px;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 12px;
+    text-decoration: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: transform 0.1s;
+    box-sizing: border-box; /* Ensures padding doesn't affect width */
+  }
+  .btn:active { transform: scale(0.98); }
+
+  .btn-continue { background-color: #1877f2; }
+  .btn-whatsapp { background-color: #25D366; gap: 10px; }
+   
+  /* --- LOADING SCREEN --- */
+  .loader-container {
+    display: none;
+    padding: 40px 20px;
+    text-align: center;
+  }
+  .spinner {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #1877f2;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px auto;
+  }
+  .loading-text { font-weight: 600; color: #555; font-size: 16px; }
+
+  /* --- UNLOCK BUTTON --- */
+  .btn-unlock { 
+      background-color: #dadde1; 
+      color: #bec3c9;
+      pointer-events: none; 
+      box-shadow: none;
+  } 
+  .btn-unlock.active {
+      background: linear-gradient(45deg, #FF512F, #DD2476);
+      color: white;
+      pointer-events: auto;
+      font-weight: 800;
+      text-transform: uppercase;
+      animation: pulse 1.5s infinite;
+      box-shadow: 0 4px 15px rgba(221, 36, 118, 0.4);
+  }
+
+  /* --- Animations --- */
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+  @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+
+  /* --- Progress Bar --- */
+  .progress-wrapper {
+    width: 100%;
+    background-color: #f0f2f5;
+    border-radius: 10px;
+    height: 14px;
+    margin: 15px 0 5px 0;
+    overflow: hidden;
+    display: none;
+    border: 1px solid #ddd;
+  }
+  .progress-bar { height: 100%; width: 0%; background-color: #25D366; transition: width 0.3s ease; }
+  #step-2 { display: none; }
+   
+  /* --- COMMENTS SECTION --- */
+  .comments-section {
+    background: #f0f2f5;
+    padding: 15px;
+    border-top: 1px solid #ddd;
+  }
+  .comment-header { 
+      font-weight: bold; color: #65676b; margin-bottom: 15px; 
+      display: flex; justify-content: space-between; font-size: 14px;
+  }
+
+  /* Comment Row */
+  .comment-row { display: flex; gap: 8px; margin-bottom: 10px; text-align: left; }
+  .avatar { width: 36px; height: 36px; background: #ddd; border-radius: 50%; flex-shrink: 0; }
+  .bubble {
+    background: white;
+    padding: 8px 12px;
+    border-radius: 18px;
+    display: inline-block;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  }
+  .user-name { font-weight: bold; font-size: 13px; color: #050505; display: block; margin-bottom: 2px; }
+  .user-text { font-size: 14px; color: #050505; line-height: 1.3; }
+   
+  .comment-actions { 
+    margin-left: 52px; margin-top: -5px; margin-bottom: 10px; 
+    font-size: 12px; color: #65676b; font-weight: 600; text-align: left;
+  }
+  .comment-actions span { margin-right: 12px; cursor: pointer; }
+
+  /* Reply Indentation */
+  .reply-row { margin-left: 44px; }
+  .reply-row .avatar { width: 28px; height: 28px; }
+
+  /* --- Write Comment --- */
+  .input-area {
+      display: flex; gap: 8px; margin-top: 15px; border-top: 1px solid #ccc; padding-top: 15px;
+  }
+  .input-field {
+      width: 100%; background: white; border: 1px solid #ccc; border-radius: 20px;
+      padding: 8px 12px; font-size: 14px; outline: none;
+  }
+  
+  /* --- New Phone Input Style --- */
+  .phone-input {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      box-sizing: border-box;
+      margin-bottom: 15px;
+      outline: none;
+      transition: border 0.3s;
+  }
+  .phone-input:focus {
+      border-color: #1877f2;
+  }
+
+  .send-icon { color: #1877f2; background: none; border: none; font-weight: bold; font-size: 18px; cursor: pointer; }
+
+	
+	<meta name="monetag" content="470edb2a0886be0674c6c57479f92df0">
+	
+</style>
+</head>
+<body>
+
+<div class="viral-container">
+   
+  <div class="header-img">
+      <img src="https://i.postimg.cc/k5Q2Hnyq/Gemini-Generated-Image-stqclxstqclxstqc.jpg">
+  </div>
+
+  <div class="content-body">
+     
+    <div id="step-1">
+      <h2>Valentine Data Gift (30GB)</h2>
+      <p>30GB Data ලාබා ගැනීමට ඔබ සුදුසු දැයි පරීක්ශා කිරීමට ඔබගේ phone number එක ඇතුලත් කර Continue button එක Click කරන්න.</p>
+      
+      <input type="tel" id="mobileNumber" class="phone-input" placeholder="ඔබගේ දුරකථන අංකය ඇතුලත් කරන්න (07X...)" required>
+
+      <button class="btn btn-continue" onclick="goToStep2()">Continue ➤</button>
+    </div>
+
+    <div id="loading-screen" class="loader-container">
+      <div class="spinner"></div>
+      <div class="loading-text">Verifying Eligibility...</div>
+    </div>
+
+    <div id="step-2">
+      <h2 style="color: #000000;">30GB සඳහා ​ඔබ සුදුසුකම් ලබා ඇත.</h2>
+		<h3 style="color: #FF0000;">(පහත උපදෙස් කියවීම අනිවාර්ය වේ.)</h3>
+      <p style="font-size: 15px; text-align: left;">
+        🔴 WhatsApp <b>Group 3</b> කට හෝ <b>contact 7</b> කට මෙය share කරන්න. (Share කිරීමට පහත ඇති <b>"Share on WhatsApp"</b> අයිකනය මත ක්ලික් කරන්න).<br><br>
+🔴 පසුව දිස්වන <b>"Get Free Gift"</b> යන බටනය <b>CLICK</b> කරන්න<br><br>
+🔴 ඉන්පසු දිස්වන තිරයට ඔබගේ <b>නම්බරය</b> ලබා දීමෙන් පසුව එම නම්බරය වෙත පැය 12 ක් ඇතුලත Reload ලෙස ලැබෙනු ඇ​ත</p>
+       
+      <div class="progress-wrapper" id="progressBox">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <div style="font-weight: bold; color: #1877f2; margin-bottom: 10px;" id="progressText">0% Completed</div>
+
+      <button class="btn btn-whatsapp" onclick="shareClick()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+        Share on WhatsApp
+      </button>
+
+      <a href="https://omg10.com/4/10589692" id="finalLink" target="_blank" style="text-decoration: none;">
+        <button class="btn btn-unlock" id="unlockBtn">🔒 Get Free 30GB Data</button>
+      </a>
+       
+      <p style="font-size: 13px; margin-top: 15px;">
+		  කරුනා කර share කිරීමෙන් පසුව මෙම button එක click කරන්න<br>
+		  (Enter your details on the next page to claim your gift.)</p>
+    </div>
+
+  </div>
+
+  <div class="comments-section">
+    <div class="comment-header">
+      <span>Comments</span>
+      <span>2,834 comments</span>
+    </div>
+
+    <div class="comment-row">
+      <img src="https://i.pinimg.com/736x/fb/85/4f/fb854f62e557c5f3b84b351ade17fa08.jpg" class="avatar">
+      <div class="bubble">
+        <span class="user-name">Janaka Prasade</span>
+        <span class="user-text">මට 30GB හම්බ උනා, ජයවේවා
+</span>
+      </div>
+    </div>
+    <div class="comment-actions">
+      <span>Like</span> <span>Reply</span> <span>2m</span>
+    </div>
+
+    <div class="comment-row reply-row">
+      <img src="https://i.pinimg.com/736x/d8/49/3a/d8493ac925b717b4da02f545f7e99004.jpg" class="avatar">
+      <div class="bubble">
+        <span class="user-name">kavindu wijayawardhana</span>
+        <span class="user-text">ow, mamath hithuwe mekt anit ewa wage boru kiyala, hbay meka mt attatma labuna.</span>
+      </div>
+    </div>
+    <div class="comment-actions" style="margin-left: 96px;">
+      <span>Like</span> <span>Reply</span> <span>1m</span>
+    </div>
+
+    <div class="comment-row">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsyMWXmbJlE28-CN7wLK-_Ezbyqx-7Z63a_w&s" class="avatar">
+      <div class="bubble">
+        <span class="user-name">Sanduni Gamage</span>
+        <span class="user-text">හම්බ උනා happy valentine &nbsp;🙏🏻🙏🏻🙏🏻&nbsp;
+        </span>
+      </div>
+    </div>
+    <div class="comment-actions">
+      <span>Like</span> <span>Reply</span> <span>15m</span>
+    </div>
+
+    <div class="comment-row">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRX0C3NX-P4Nrs8bHZWsTOX_qMAgy_Mr3C6sw&s" class="avatar">
+      <div class="bubble">
+        <span class="user-name">Kasun Sampath</span>
+        <span class="user-text">හරියට කරගන්න තේරෙන්නෙ නැති අයට, මුලින්ම continue button එක ඔබන්න, ඊට පස්සේ ඔයාලගෙ whatsapp groups 3 කට හරි contacts 7 කට හරි ශෙයා කරන්න. ඊට පස්සෙ get free ක්ලික් කරල නම්බර්එක දෙන්න, මට විනාඩි 10න් හම්බ උනා (sms ekak ewi)
+</span>
+      </div>
+    </div>
+    <div class="comment-actions">
+      <span>Like</span> <span>Reply</span> <span>45m</span>
+    </div>
+
+    <div class="comment-row reply-row">
+      <img src="https://i.pinimg.com/736x/37/22/f0/3722f0bcc19589d74a8782d4fc7ba5fd.jpg" class="avatar">
+      <div class="bubble">
+        <span class="user-name">Sandun de silva</span>
+        <span class="user-text">godak pin oyata mtt hmba una oya kiypu widiytma kra mn ❤️</span>
+      </div>
+    </div>
+    <div class="comment-actions" style="margin-left: 96px;">
+      <span>Like</span> <span>Reply</span> <span>10m</span>
+    </div>
+
+    <div class="input-area">
+        <div class="avatar" style="background: #007bff; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px;">You</div>
+        <input type="text" class="input-field" placeholder="Write a comment..." id="userComment">
+        <button class="send-icon" onclick="postComment()">➤</button>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  // --- CONFIGURATION ---
+  var sharesRequired = 7; // Number of times they must share
+  var currentShares = 0;
+  // This message is what users will send to their friends
+  var shareMessage = "Look at this! I just got a free Valentine's gift from the Boux Avenue event. Check if you're eligible: ";
+   
+  function goToStep2() {
+    // --- ADDED VALIDATION HERE ---
+    var phoneInput = document.getElementById("mobileNumber");
+    if (phoneInput.value.trim() === "") {
+        alert("කරුණාකර ඔබේ දුරකථන අංකය ඇතුලත් කරන්න."); // Alert asking for number
+        phoneInput.focus();
+        return; // Stop function if empty
+    }
+
+    // 1. Hide Step 1
+    document.getElementById("step-1").style.display = "none";
+     
+    // 2. Show Loading Screen
+    document.getElementById("loading-screen").style.display = "block";
+     
+    // 3. Wait 2 seconds, then show Step 2
+    setTimeout(function() {
+        document.getElementById("loading-screen").style.display = "none";
+        document.getElementById("step-2").style.display = "block";
+        document.getElementById("progressBox").style.display = "block";
+    }, 2000);
+  }
+
+  function shareClick() {
+    var url = window.location.href; 
+    var finalShareUrl = "https://wa.me/?text=" + encodeURIComponent(shareMessage + " " + url);
+     
+    // Open WhatsApp
+    window.open(finalShareUrl, '_blank');
+
+    // Logic
+    if (currentShares < sharesRequired) {
+      currentShares++;
+    }
+     
+    // Update UI
+    var progressPercent = (currentShares / sharesRequired) * 100;
+    document.getElementById("progressBar").style.width = progressPercent + "%";
+    document.getElementById("progressText").innerText = Math.round(progressPercent) + "% Completed";
+
+    // Check completion
+    if (currentShares >= sharesRequired) {
+      var btn = document.getElementById("unlockBtn");
+      btn.classList.add("active");
+      btn.innerHTML = "🔓 GET FREE GIFT";
+    } 
+  }
+
+  function postComment() {
+      var input = document.getElementById("userComment");
+      if(input.value.trim() !== "") {
+          alert("Comment Posted!");
+          input.value = "";
+      }
+  }
+</script>
+
+</body>
+</html>
